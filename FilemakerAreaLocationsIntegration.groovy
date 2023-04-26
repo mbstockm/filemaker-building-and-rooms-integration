@@ -140,7 +140,7 @@ void updateAreaLocation(Sql sql, AreaLocation areaLocation) {
                         where syraloc_serial = ?
                     """
             ,[areaLocation.creationTimestamp,areaLocation.createdBy,areaLocation.modificationTimestamp,areaLocation.modifiedBy,
-              areaLocation.areaName,areaLocation.areaActive,areaLocation.physicalAddress,areaLocation.areaSerial
+              areaLocation.areaName,areaLocation.areaActive,areaLocation.physicalAddress,areaLocation.areaSerial,
               areaLocation.serial])
 }
 
