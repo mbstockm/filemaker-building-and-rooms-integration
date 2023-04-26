@@ -15,7 +15,7 @@ import java.time.LocalDate
  */
 List<Room> rooms = []
 Sql.withInstance(filemakerDatabaseProps()) { sql ->
-    sql.query("""SELECT Serial, ID, FullName, ShortName, BuildingSerial, Building, RoomSize, RoomType, createdDate, Createdby, ModDate, ModBy, EMSRoomID, banner_room_bldg, banner_room_number FROM ROO_Room_DCIonSerial""") { ResultSet rs ->
+    sql.query("""SELECT Serial, ID, FullName, ShortName, BuildingSerial, Building, RoomSize, RoomType, createdDate, Createdby, ModDate, ModBy, EMSRoomID, banner_room_bldg, banner_room_number, RoomActive FROM ROO_Room_DCIonSerial""") { ResultSet rs ->
         while (rs.next()) {
             Room room = new Room(
                     rs.getBigDecimal('Serial'),
@@ -32,7 +32,8 @@ Sql.withInstance(filemakerDatabaseProps()) { sql ->
                     rs.getString('ModBy')?.trim(),
                     null,
                     rs.getString('banner_room_bldg')?.trim(),
-                    rs.getString('banner_room_number')?.trim()
+                    rs.getString('banner_room_number')?.trim(),
+                    rs.getString('RoomActive')
             )
             // The following fields need error handling so set them after the creation of the object
             String buildingSerial = null
@@ -115,6 +116,7 @@ Room getRoomBySerial(Sql sql, BigDecimal serial) {
                            ,syrroom_ems_room_id
                            ,syrroom_banner_room_bldg
                            ,syrroom_banner_room_number
+                           ,syrroom_room_active
                        FROM syrroom
                       WHERE syrroom_serial = ?""",[serial]) { ResultSet rs ->
         if (rs.next()) {
@@ -133,7 +135,8 @@ Room getRoomBySerial(Sql sql, BigDecimal serial) {
                     rs.getString('syrroom_mod_by'),
                     (BigInteger) rs.getObject('syrroom_ems_room_id'),
                     rs.getString('syrroom_banner_room_bldg'),
-                    rs.getString('syrroom_banner_room_number')
+                    rs.getString('syrroom_banner_room_number'),
+                    rs.getString('syrroom_room_active')
             )
         }
     }
@@ -160,11 +163,12 @@ void insertRoom(Sql sql, Room room) {
                                           ,syrroom_mod_by
                                           ,syrroom_ems_room_id
                                           ,syrroom_banner_room_bldg
-                                          ,syrroom_banner_room_number) 
+                                          ,syrroom_banner_room_number
+                                          ,syrroom_room_active) 
                                    values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"""
             ,[room.serial,room.ID,room.fullName,room.shortName,room.buildingSerial,room.building,room.roomSize,room.roomType,
               room.createdDate,room.createdBy,room.modDate,room.modBy,
-              room.emsRoomID,room.bannerRoomBuilding,room.bannerRoomNumber])
+              room.emsRoomID,room.bannerRoomBuilding,room.bannerRoomNumber,room.roomActive])
 }
 
 /**
@@ -188,10 +192,11 @@ void updateRoom(Sql sql, Room room){
                              ,syrroom_ems_room_id = ?
                              ,syrroom_banner_room_bldg = ?
                              ,syrroom_banner_room_number = ?
+                             ,syrroom_room_active
                         where syrroom_serial = ?"""
             ,[room.ID,room.fullName,room.shortName,room.buildingSerial,room.building,room.roomSize,room.roomType,
               room.createdDate,room.createdBy,room.modDate,room.modBy,
-              room.emsRoomID,room.bannerRoomBuilding,room.bannerRoomNumber,room.serial])
+              room.emsRoomID,room.bannerRoomBuilding,room.bannerRoomNumber,room.roomActive,room.serial])
 }
 
 
@@ -239,4 +244,5 @@ class Room {
     BigInteger emsRoomID
     String bannerRoomBuilding
     String bannerRoomNumber
+    String roomActive
 }

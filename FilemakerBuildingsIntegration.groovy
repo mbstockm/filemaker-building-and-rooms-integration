@@ -15,7 +15,7 @@ import java.time.LocalDateTime
  */
 List<Building> buildings = []
 Sql.withInstance(filemakerDatabaseProps()) { sql ->
-    sql.query("""SELECT Serial, BuildingRID, Common_Building_Name, ShortName, CreateTimestamp, CreatedBy, Mod_Timestamp, ModifiedBy, EmsID, BannerCode  FROM BUI_DCI""") { ResultSet rs ->
+    sql.query("""SELECT Serial, BuildingRID, Common_Building_Name, ShortName, CreateTimestamp, CreatedBy, Mod_Timestamp, ModifiedBy, EmsID, BannerCode, AreaSerial, BuildingActive  FROM BUI_DCI""") { ResultSet rs ->
         while (rs.next()) {
             Building building = new Building(
                     rs.getBigDecimal('Serial'),
@@ -27,8 +27,21 @@ Sql.withInstance(filemakerDatabaseProps()) { sql ->
                     rs.getTimestamp('Mod_Timestamp')?.toLocalDateTime(),
                     rs.getString('ModifiedBy'),
                     rs.getString('EmsID')?.toBigInteger(),
-                    rs.getString('BannerCode')
+                    rs.getString('BannerCode'),
+                    null,
+                    rs.getString('BuildingActive')
             )
+
+            String areaSerial = null
+            try {
+                areaSerial = rs.getString('AreaSerial');
+                building.setAreaSerial(areaSerial?.toBigDecimal())
+            } catch (NumberFormatException nfe) {
+                System.err.println('Error on Area Serial field conversion to number ' + areaSerial)
+            } catch (Exception e) {
+                System.err.println('Error on Area Serial field ' + areaSerial + e.getMessage())
+            }
+
             buildings.add(building)
         }
     }
@@ -73,7 +86,9 @@ Building getBuildingBySerial(Sql sql, BigDecimal serial) {
                            ,syrbldg_mod_timestamp
                            ,syrbldg_modified_by
                            ,syrbldg_ems_id
-                           ,syrbldg_banner_code  
+                           ,syrbldg_banner_code
+                           ,syrbldg_area_serial
+                           ,syrbldg_building_active
                        FROM syrbldg 
                       WHERE syrbldg_serial = ?""",[serial]) { ResultSet rs ->
         if (rs.next()) {
@@ -87,7 +102,9 @@ Building getBuildingBySerial(Sql sql, BigDecimal serial) {
                     rs.getTimestamp('syrbldg_mod_timestamp')?.toLocalDateTime(),
                     rs.getString('syrbldg_modified_by'),
                     (BigInteger) rs.getObject('syrbldg_ems_id'),
-                    rs.getString('syrbldg_banner_code')
+                    rs.getString('syrbldg_banner_code'),
+                    rs.getBigDecimal('syrbldg_area_serial'),
+                    rs.getString('syrbldg_building_active')
             )
         }
     }
@@ -109,11 +126,13 @@ void insertBuilding(Sql sql, Building building) {
                                           ,syrbldg_mod_timestamp
                                           ,syrbldg_modified_by
                                           ,syrbldg_ems_id
-                                          ,syrbldg_banner_code) 
+                                          ,syrbldg_banner_code
+                                          ,syrbldg_area_serial
+                                          ,syrbldg_building_active) 
                                    values (?,?,?,?,?,?,?,?,?,?)"""
             ,[building.serial,building.buildingRID,building.commonBuildingName,building.shortName,
               building.createTimestamp,building.createdBy,building.modTimestamp,building.modifiedBy,
-              building.emsID,building.bannerCode])
+              building.emsID,building.bannerCode,building.areaSerial,building.buildingActive])
 }
 
 /**
@@ -132,10 +151,12 @@ void updateBuilding(Sql sql, Building building){
                              ,syrbldg_modified_by = ?
                              ,syrbldg_ems_id = ?
                              ,syrbldg_banner_code = ?
+                             ,syrbldg_area_serial = ?
+                             ,syrbldg_building_active = ?
                         where syrbldg_serial = ?"""
             ,[building.buildingRID,building.commonBuildingName,building.shortName,
               building.createTimestamp,building.createdBy,building.modTimestamp,building.modifiedBy,
-              building.emsID,building.bannerCode,building.serial])
+              building.emsID,building.bannerCode,building.areaSerial,building.buildingActive,building.serial])
 }
 
 /**
@@ -177,4 +198,6 @@ class Building {
     String modifiedBy
     BigInteger emsID
     String bannerCode
+    BigDecimal areaSerial
+    String buildingActive
 }
