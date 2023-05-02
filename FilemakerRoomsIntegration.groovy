@@ -192,7 +192,7 @@ void updateRoom(Sql sql, Room room){
                              ,syrroom_ems_room_id = ?
                              ,syrroom_banner_room_bldg = ?
                              ,syrroom_banner_room_number = ?
-                             ,syrroom_room_active
+                             ,syrroom_room_active = ?
                         where syrroom_serial = ?"""
             ,[room.ID,room.fullName,room.shortName,room.buildingSerial,room.building,room.roomSize,room.roomType,
               room.createdDate,room.createdBy,room.modDate,room.modBy,

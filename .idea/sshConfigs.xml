@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" host="ban-jobsub-01.utica.edu" id="f8481025-be79-444e-9bfa-30dd8b32b338" port="22" nameFormat="DESCRIPTIVE" username="mbstockm" useOpenSSHConfig="true" />
+    </configs>
+  </component>
+</project>
