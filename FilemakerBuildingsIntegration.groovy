@@ -129,7 +129,7 @@ void insertBuilding(Sql sql, Building building) {
                                           ,syrbldg_banner_code
                                           ,syrbldg_area_serial
                                           ,syrbldg_building_active) 
-                                   values (?,?,?,?,?,?,?,?,?,?)"""
+                                   values (?,?,?,?,?,?,?,?,?,?,?,?)"""
             ,[building.serial,building.buildingRID,building.commonBuildingName,building.shortName,
               building.createTimestamp,building.createdBy,building.modTimestamp,building.modifiedBy,
               building.emsID,building.bannerCode,building.areaSerial,building.buildingActive])

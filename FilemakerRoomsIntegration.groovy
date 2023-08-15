@@ -165,7 +165,7 @@ void insertRoom(Sql sql, Room room) {
                                           ,syrroom_banner_room_bldg
                                           ,syrroom_banner_room_number
                                           ,syrroom_room_active) 
-                                   values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"""
+                                   values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"""
             ,[room.serial,room.ID,room.fullName,room.shortName,room.buildingSerial,room.building,room.roomSize,room.roomType,
               room.createdDate,room.createdBy,room.modDate,room.modBy,
               room.emsRoomID,room.bannerRoomBuilding,room.bannerRoomNumber,room.roomActive])
